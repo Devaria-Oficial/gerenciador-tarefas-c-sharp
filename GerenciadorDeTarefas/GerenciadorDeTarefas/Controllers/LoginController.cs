@@ -1,4 +1,7 @@
 ﻿using GerenciadorDeTarefas.Dtos;
+using GerenciadorDeTarefas.Models;
+using GerenciadorDeTarefas.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -11,9 +14,12 @@ namespace GerenciadorDeTarefas.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    public class LoginController : ControllerBase
+    public class LoginController : BaseController
     {
         private readonly ILogger<LoginController> _logger;
+
+        private readonly string loginTeste = "admin@admin.com";
+        private readonly string senhaTeste = "Admin1234@";
 
         public LoginController(ILogger<LoginController> logger)
         {
@@ -21,11 +27,15 @@ namespace GerenciadorDeTarefas.Controllers
         }
 
         [HttpPost]
+        [AllowAnonymous]
         public IActionResult EfetuarLogin([FromBody] LoginRequisicaoDto requisicao)
         {
             try
             {
-                if (requisicao == null || requisicao.Login == null || requisicao.Senha == null)
+                if (requisicao == null
+                    || string.IsNullOrEmpty(requisicao.Login) || string.IsNullOrWhiteSpace(requisicao.Login)
+                    || string.IsNullOrEmpty(requisicao.Senha) || string.IsNullOrWhiteSpace(requisicao.Senha)
+                    || requisicao.Login != loginTeste || requisicao.Senha != senhaTeste)
                 {
                     return BadRequest(new ErroRespotaDto()
                     {
@@ -34,7 +44,21 @@ namespace GerenciadorDeTarefas.Controllers
                     });
                 }
 
-                return Ok("Usuário autenticado com sucesso");
+                var usuarioTeste = new Usuario()
+                {
+                    Id = 1,
+                    Nome = "Usuário de Teste",
+                    Email = loginTeste,
+                    Senha = senhaTeste
+                };
+
+                var token = TokenService.CriarToken(usuarioTeste);
+
+                return Ok(new LoginRespostaDto() { 
+                    Email = usuarioTeste.Email,
+                    Nome = usuarioTeste.Nome,
+                    Token = token
+                });
             }
             catch(Exception excecao)
             {
