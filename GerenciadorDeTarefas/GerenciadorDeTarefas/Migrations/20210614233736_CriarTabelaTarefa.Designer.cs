@@ -4,14 +4,16 @@ using GerenciadorDeTarefas.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace GerenciadorDeTarefas.Migrations
 {
     [DbContext(typeof(GerenciadorDeTarefasContext))]
-    partial class GerenciadorDeTarefasContextModelSnapshot : ModelSnapshot
+    [Migration("20210614233736_CriarTabelaTarefa")]
+    partial class CriarTabelaTarefa
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
